@@ -1,0 +1,9 @@
+[project]
+name = "raylib-example-game"
+version = "0.1.0"
+description = "A simple game example using Raylib Python bindings"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "raylib>=5.5.0.2",
+]
