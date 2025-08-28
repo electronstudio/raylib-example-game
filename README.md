@@ -132,6 +132,34 @@ uv run main.py
 uv build
 ```
 
+### Binary Compilation with Nuitka
+
+This project includes Nuitka integration for compiling to standalone executables:
+
+**Simple build (always uses CPython 3.13):**
+```bash
+# Build with automatic CPython 3.13 selection
+uv run build-binary
+```
+
+**Direct Nuitka compilation:**
+```bash
+# Your original command with CPython 3.13
+uv run --python python3.13 python -m nuitka --onefile main.py
+
+# With temporary Nuitka install (no permanent dependency)
+uv run --python python3.13 --with nuitka python -m nuitka --onefile main.py
+```
+
+**Build options:**
+- `uv run build-binary` - Smart build script that automatically uses CPython 3.13
+- `uv run --python python3.13 python -m nuitka ...` - Full manual control with CPython 3.13
+- `uv run --python python3.13 --with nuitka ...` - Temporary install with CPython 3.13
+
+**Note:** The build script automatically uses CPython 3.13 since Nuitka doesn't work with PyPy.
+
+The build script automatically detects your platform and applies appropriate optimizations.
+
 ## Usage
 
 Once installed, you can run the game using:
