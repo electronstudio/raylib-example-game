@@ -19,7 +19,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "raylib>=5.5.0.2",
+    "raylib-sdl>=5.5.0.2",
 ]
 
 [project.urls]

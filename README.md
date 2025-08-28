@@ -5,6 +5,7 @@ A simple game example using Raylib Python bindings, demonstrating modern Python 
 ## Features
 
 - Simple Raylib game window with text rendering
+- Uses `raylib_sdl` for better controller compatibility
 - Modern Python packaging with `pyproject.toml`
 - Clean modular architecture
 - Console script entry point
@@ -43,6 +44,30 @@ uv run --python pypy main.py
 **Performance Notes:**
 - **PyPy**: Faster execution for game logic, longer startup time
 - **CPython**: Faster startup, may be slower for intensive computations
+
+## Raylib Backend
+
+This project uses **`raylib_sdl`** instead of the standard `raylib` package for enhanced controller and gamepad compatibility. The SDL backend provides better input device support across different platforms.
+
+### Switching to Standard Raylib
+
+If you prefer to use the standard Raylib backend, you can switch by updating the dependency:
+
+```bash
+# Remove raylib_sdl and add standard raylib
+uv remove raylib_sdl
+uv add raylib
+
+# Or edit pyproject.toml directly
+# Change: "raylib-sdl>=5.5.0.2"
+# To:     "raylib>=5.5.0.2"
+```
+
+**Backend Comparison:**
+- **`raylib_sdl`**: Better controller/gamepad support, SDL backend
+- **`raylib`**: Standard Raylib backend, potentially faster for basic graphics
+
+The API is identical between both packages - no code changes are needed when switching.
 
 ## Installation
 
