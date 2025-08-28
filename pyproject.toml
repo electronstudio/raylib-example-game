@@ -3,7 +3,33 @@ name = "raylib-example-game"
 version = "0.1.0"
 description = "A simple game example using Raylib Python bindings"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+keywords = ["raylib", "game", "example", "graphics"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Games/Entertainment",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
     "raylib>=5.5.0.2",
 ]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/raylib-example-game"
+Repository = "https://github.com/yourusername/raylib-example-game.git"
+Issues = "https://github.com/yourusername/raylib-example-game/issues"
+
+[project.scripts]
+raylib-example-game = "raylib_example_game:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
