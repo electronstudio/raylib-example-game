@@ -1,10 +1,17 @@
 import sys
 import platform
+import os
 import pyray
+from .screens import GameScreen
+from .logo_screen import LogoScreen
+from .title_screen import TitleScreen
+from .gameplay_screen import GameplayScreen
+from .options_screen import OptionsScreen
+from .ending_screen import EndingScreen
 
 
 class Game:
-    def __init__(self, width: int = 800, height: int = 450, title: str = "Raylib Example Game"):
+    def __init__(self, width: int = 800, height: int = 450, title: str = "raylib game template"):
         self.screen_width = width
         self.screen_height = height
         self.title = title
@@ -14,22 +21,160 @@ class Game:
         python_version = sys.version.split()[0]
         print(f"Running on {python_impl} {python_version}")
         print(f"Full version: {sys.version}")
+        
+        # Screen management
+        self.current_screen = GameScreen.LOGO
+        self.font = None
+        self.music = None
+        self.fx_coin = None
+        
+        # Screen transition variables
+        self.trans_alpha = 0.0
+        self.on_transition = False
+        self.trans_fade_out = False
+        self.trans_from_screen = -1
+        self.trans_to_screen = GameScreen.UNKNOWN
+        
+        # Screen instances
+        self.screens = {}
     
     def run(self):
         pyray.init_window(self.screen_width, self.screen_height, self.title)
+        pyray.init_audio_device()
+        
+        # Load global data (assets that must be available in all screens)
+        resources_path = os.path.join(os.path.dirname(__file__), "resources")
+        self.font = pyray.load_font(os.path.join(resources_path, "mecha.png"))
+
+        self.music = pyray.load_music_stream(os.path.join(resources_path, "music.ogg"))
+        self.fx_coin = pyray.load_sound(os.path.join(resources_path, "coin.wav"))
+        
+        if self.music:
+            pyray.set_music_volume(self.music, 1.0)
+            pyray.play_music_stream(self.music)
+        
+        # Initialize screens
+        self.screens[GameScreen.LOGO] = LogoScreen()
+        self.screens[GameScreen.TITLE] = TitleScreen(self.font, self.fx_coin)
+        self.screens[GameScreen.GAMEPLAY] = GameplayScreen(self.font, self.fx_coin)
+        self.screens[GameScreen.OPTIONS] = OptionsScreen()
+        self.screens[GameScreen.ENDING] = EndingScreen(self.font, self.fx_coin)
+        
+        # Setup and init first screen
+        self.current_screen = GameScreen.LOGO
+        self.screens[self.current_screen].init()
+        
         pyray.set_target_fps(60)
 
         while not pyray.window_should_close():
-            self._update()
-            self._draw()
+            self._update_draw_frame()
 
+        # De-Initialization
+        self._unload_current_screen()
+        
+        # Unload global data
+        pyray.unload_font(self.font)
+        if self.music:
+            pyray.unload_music_stream(self.music)
+        pyray.unload_sound(self.fx_coin)
+        
+        pyray.close_audio_device()
         pyray.close_window()
     
-    def _update(self):
-        pass
+    def _change_to_screen(self, screen):
+        # Unload current screen
+        self.screens[self.current_screen].unload()
+        
+        # Init next screen
+        self.screens[screen].init()
+        
+        self.current_screen = screen
     
-    def _draw(self):
+    def _transition_to_screen(self, screen):
+        self.on_transition = True
+        self.trans_fade_out = False
+        self.trans_from_screen = self.current_screen
+        self.trans_to_screen = screen
+        self.trans_alpha = 0.0
+    
+    def _update_transition(self):
+        if not self.trans_fade_out:
+            self.trans_alpha += 0.05
+            
+            # NOTE: Due to float internal representation, condition jumps on 1.0f instead of 1.05f
+            # For that reason we compare against 1.01f, to avoid last frame loading stop
+            if self.trans_alpha > 1.01:
+                self.trans_alpha = 1.0
+                
+                # Unload current screen
+                self.screens[self.trans_from_screen].unload()
+                
+                # Load next screen
+                self.screens[self.trans_to_screen].init()
+                
+                self.current_screen = self.trans_to_screen
+                
+                # Activate fade out effect to next loaded screen
+                self.trans_fade_out = True
+        else:  # Transition fade out logic
+            self.trans_alpha -= 0.02
+            
+            if self.trans_alpha < -0.01:
+                self.trans_alpha = 0.0
+                self.trans_fade_out = False
+                self.on_transition = False
+                self.trans_from_screen = -1
+                self.trans_to_screen = GameScreen.UNKNOWN
+    
+    def _draw_transition(self):
+        pyray.draw_rectangle(0, 0, pyray.get_screen_width(), pyray.get_screen_height(), pyray.fade(pyray.BLACK, self.trans_alpha))
+    
+    def _unload_current_screen(self):
+        if self.current_screen in self.screens:
+            self.screens[self.current_screen].unload()
+    
+    def _update_draw_frame(self):
+        # Update
+        pyray.update_music_stream(self.music)  # NOTE: Music keeps playing between screens
+        
+        if not self.on_transition:
+            current_screen_obj = self.screens[self.current_screen]
+            current_screen_obj.update()
+            
+            if self.current_screen == GameScreen.LOGO:
+                if current_screen_obj.should_finish():
+                    self._transition_to_screen(GameScreen.TITLE)
+            elif self.current_screen == GameScreen.TITLE:
+                finish_result = current_screen_obj.should_finish()
+                if finish_result == 1:
+                    self._transition_to_screen(GameScreen.OPTIONS)
+                elif finish_result == 2:
+                    self._transition_to_screen(GameScreen.GAMEPLAY)
+            elif self.current_screen == GameScreen.OPTIONS:
+                if current_screen_obj.should_finish():
+                    self._transition_to_screen(GameScreen.TITLE)
+            elif self.current_screen == GameScreen.GAMEPLAY:
+                finish_result = current_screen_obj.should_finish()
+                if finish_result == 1:
+                    self._transition_to_screen(GameScreen.ENDING)
+            elif self.current_screen == GameScreen.ENDING:
+                finish_result = current_screen_obj.should_finish()
+                if finish_result == 1:
+                    self._transition_to_screen(GameScreen.TITLE)
+        else:
+            self._update_transition()  # Update transition (fade-in, fade-out)
+        
+        # Draw
         pyray.begin_drawing()
         pyray.clear_background(pyray.RAYWHITE)
-        pyray.draw_text("Hello, Raylib!", 280, 200, 20, pyray.DARKGRAY)
+        
+        # Draw current screen
+        self.screens[self.current_screen].draw()
+        
+        # Draw full screen rectangle in front of everything
+        if self.on_transition:
+            self._draw_transition()
+        
+        pyray.draw_fps(10, 10)
+        
         pyray.end_drawing()

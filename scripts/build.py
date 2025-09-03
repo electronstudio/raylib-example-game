@@ -21,6 +21,7 @@ def main():
         "--show-progress",
         "--prefer-source-code",
         "--remove-output",
+        "--include-package-data=raylib_example_game.resources",
         "main.py"
     ]
     

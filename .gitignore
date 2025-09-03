@@ -7,7 +7,7 @@ wheels/
 *.egg-info
 
 # Virtual environments
-.venv
+.venv*
 
 # Nuitka build artifacts
 raylib-example-game
@@ -27,3 +27,5 @@ main.onefile-build/
 
 # Nuitka cache
 .nuitka/
+
+.idea/
