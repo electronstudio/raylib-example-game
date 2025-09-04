@@ -4,11 +4,13 @@ A simple game example using Raylib Python bindings, demonstrating modern Python 
 
 ## Features
 
-- Simple Raylib game window with text rendering
+- Multi-screen game template with transitions and animations
+- Resizable window with render texture scaling and bilinear filtering
 - Uses `raylib_sdl` for better controller compatibility
 - Modern Python packaging with `pyproject.toml`
-- Clean modular architecture
-- Console script entry point
+- Clean modular architecture with multiple entry points
+- Cross-platform binary builds via GitHub Actions
+- Web build support via pygbag
 
 ## Requirements
 
@@ -159,6 +161,51 @@ uv run --python python3.13 --with nuitka python -m nuitka --onefile main.py
 **Note:** The build script automatically uses CPython 3.13 since Nuitka doesn't work with PyPy.
 
 The build script automatically detects your platform and applies appropriate optimizations.
+
+### Web Build with pygbag
+
+Build for web deployment using pygbag:
+
+```bash
+# Build for web and start local server
+uv run build-web
+
+# Build for web only (no server)
+uv run build-web --build
+```
+
+## GitHub Actions Workflows
+
+This project includes automated workflows for building and deployment:
+
+### Binary Build Workflow
+
+Automatically builds cross-platform binaries on every push to master:
+
+- **Linux**: Ubuntu latest
+- **Windows**: Windows Server latest  
+- **macOS**: macOS latest
+
+**Triggers:**
+- Push to `master` branch
+- Pull requests
+- Git tags (creates releases)
+- Manual workflow dispatch
+
+**Artifacts:** Downloadable binaries for each platform
+
+**Creating Releases:**
+```bash
+# Tag and push to create a release with binaries
+git tag v1.0.0
+git push upstream v1.0.0
+```
+
+### Web Deployment Workflow
+
+Automatically deploys the game to GitHub Pages on push to master.
+
+**Important:** The workflow requires `contents: write` permission to create GitHub releases. If release creation fails with a 403 error, check your repository's Actions permissions under Settings → Actions → General → Workflow permissions.
 
 ## Usage
 
