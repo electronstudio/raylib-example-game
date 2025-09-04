@@ -29,21 +29,21 @@ def main():
     
     try:
         result = subprocess.run(cmd, check=True, cwd=os.getcwd())
-        print("\n✅ Build completed successfully!")
+        print("\n[SUCCESS] Build completed successfully!")
         
         # Check if binary was created
         binary_name = "raylib-example-game"
         if os.path.exists(binary_name):
-            print(f"📦 Binary created: {binary_name}")
-            print(f"📁 Size: {os.path.getsize(binary_name) / 1024 / 1024:.1f} MB")
+            print(f"[BINARY] Binary created: {binary_name}")
+            print(f"[SIZE] Size: {os.path.getsize(binary_name) / 1024 / 1024:.1f} MB")
         else:
-            print("⚠️  Binary not found at expected location")
+            print("[WARNING] Binary not found at expected location")
             
     except subprocess.CalledProcessError as e:
-        print(f"❌ Build failed with exit code {e.returncode}")
+        print(f"[ERROR] Build failed with exit code {e.returncode}")
         sys.exit(e.returncode)
     except FileNotFoundError:
-        print("❌ uv not found. Make sure it's installed and in PATH")
+        print("[ERROR] uv not found. Make sure it's installed and in PATH")
         sys.exit(1)
 
 
