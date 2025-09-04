@@ -11,11 +11,12 @@ class EndingScreen(BaseScreen):
     def update(self):
         # Press enter or tap to return to TITLE screen
         if pyray.is_key_pressed(pyray.KEY_ENTER) or pyray.is_gesture_detected(pyray.GESTURE_TAP):
+            pyray.toggle_borderless_windowed()
             self.finish_screen = 1
             pyray.play_sound(self.fx_coin)
     
-    def draw(self):
-        pyray.draw_rectangle(0, 0, pyray.get_screen_width(), pyray.get_screen_height(), pyray.BLUE)
+    def draw(self, width: int, height: int):
+        pyray.draw_rectangle(0, 0, width, height, pyray.BLUE)
         
         pos = pyray.Vector2(20, 10)
         pyray.draw_text_ex(self.font, "ENDING SCREEN", pos, self.font.baseSize * 3.0, 4, pyray.DARKBLUE)

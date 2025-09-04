@@ -38,11 +38,23 @@ class Game:
         
         # Screen instances
         self.screens = {}
+        
+        # Render texture for consistent rendering
+        self.render_texture = None
+        self.virtual_screen_width = width
+        self.virtual_screen_height = height
     
     async def run(self):
         pyray.init_window(self.screen_width, self.screen_height, self.title)
+        pyray.set_window_state(pyray.ConfigFlags.FLAG_WINDOW_RESIZABLE)
         pyray.init_audio_device()
+
+        # Create render texture for consistent virtual screen rendering
+        self.render_texture = pyray.load_render_texture(self.virtual_screen_width, self.virtual_screen_height)
         
+        # Set bilinear filtering for smooth scaling
+        pyray.set_texture_filter(self.render_texture.texture, pyray.TextureFilter.TEXTURE_FILTER_BILINEAR)
+
         # Load global data (assets that must be available in all screens)
         resources_path = os.path.join(os.path.dirname(__file__), "resources")
         self.font = pyray.load_font(os.path.join(resources_path, "mecha.png"))
@@ -79,6 +91,10 @@ class Game:
         if self.music:
             pyray.unload_music_stream(self.music)
         pyray.unload_sound(self.fx_coin)
+        
+        # Unload render texture
+        if self.render_texture:
+            pyray.unload_render_texture(self.render_texture)
         
         pyray.close_audio_device()
         pyray.close_window()
@@ -129,7 +145,7 @@ class Game:
                 self.trans_to_screen = GameScreen.UNKNOWN
     
     def _draw_transition(self):
-        pyray.draw_rectangle(0, 0, pyray.get_screen_width(), pyray.get_screen_height(), pyray.fade(pyray.BLACK, self.trans_alpha))
+        pyray.draw_rectangle(0, 0, self.virtual_screen_width, self.virtual_screen_height, pyray.fade(pyray.BLACK, self.trans_alpha))
     
     def _unload_current_screen(self):
         if self.current_screen in self.screens:
@@ -166,17 +182,40 @@ class Game:
         else:
             self._update_transition()  # Update transition (fade-in, fade-out)
         
-        # Draw
-        pyray.begin_drawing()
+        # Draw to render texture (virtual screen)
+        pyray.begin_texture_mode(self.render_texture)
         pyray.clear_background(pyray.RAYWHITE)
         
         # Draw current screen
-        self.screens[self.current_screen].draw()
+        self.screens[self.current_screen].draw(self.virtual_screen_width, self.virtual_screen_height)
         
         # Draw full screen rectangle in front of everything
         if self.on_transition:
             self._draw_transition()
         
         pyray.draw_fps(10, 10)
+        
+        pyray.end_texture_mode()
+        
+        # Draw render texture to actual screen (scaled to fit window)
+        pyray.begin_drawing()
+        pyray.clear_background(pyray.BLACK)  # Letterbox areas will be black
+        
+        # Calculate scaling to fit the window while maintaining aspect ratio
+        screen_width = pyray.get_render_width()
+        screen_height = pyray.get_render_height()
+        
+        scale = min(screen_width / self.virtual_screen_width, screen_height / self.virtual_screen_height)
+        
+        # Calculate position to center the scaled texture
+        virtual_width = self.virtual_screen_width * scale
+        virtual_height = self.virtual_screen_height * scale
+        virtual_x = (screen_width - virtual_width) // 2
+        virtual_y = (screen_height - virtual_height) // 2
+        
+        # Draw the render texture scaled and centered
+        dest_rec = pyray.Rectangle(virtual_x, virtual_y, virtual_width, virtual_height)
+        source_rec = pyray.Rectangle(0, 0, self.render_texture.texture.width, -self.render_texture.texture.height)
+        pyray.draw_texture_pro(self.render_texture.texture, source_rec, dest_rec, pyray.Vector2(0, 0), 0.0, pyray.WHITE)
         
         pyray.end_drawing()

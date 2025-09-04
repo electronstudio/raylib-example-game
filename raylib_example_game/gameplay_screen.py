@@ -14,8 +14,8 @@ class GameplayScreen(BaseScreen):
             self.finish_screen = 1
             pyray.play_sound(self.fx_coin)
     
-    def draw(self):
-        pyray.draw_rectangle(0, 0, pyray.get_screen_width(), pyray.get_screen_height(), pyray.PURPLE)
+    def draw(self, width: int, height: int):
+        pyray.draw_rectangle(0, 0, width, height, pyray.PURPLE)
         pos = pyray.Vector2(20, 10)
-        pyray.draw_text_ex(self.font, "GAMEPLAY SCREEN", pos, self.font.baseSize * 3.0, 4, pyray.MAROON)
+        pyray.draw_text_ex(self.font, f"GAMEPLAY SCREEN {width} {height}", pos, self.font.baseSize * 3.0, 4, pyray.MAROON)
         pyray.draw_text("PRESS ENTER or TAP to JUMP to ENDING SCREEN", 130, 220, 20, pyray.MAROON)

@@ -9,5 +9,5 @@ class OptionsScreen(BaseScreen):
     def update(self):
         pass
     
-    def draw(self):
+    def draw(self, width: int, height: int):
         pass

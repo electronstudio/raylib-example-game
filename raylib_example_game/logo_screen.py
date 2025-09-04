@@ -67,7 +67,7 @@ class LogoScreen(BaseScreen):
                         self.alpha = 0.0
                         self.finish_screen = 1  # Jump to next screen
     
-    def draw(self):
+    def draw(self, width: int, height: int):
         if self.state == 0:  # Draw blinking top-left square corner
             if (self.frames_counter // 10) % 2:
                 pyray.draw_rectangle(self.logo_position_x, self.logo_position_y, 16, 16, pyray.BLACK)
