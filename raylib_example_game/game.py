@@ -61,6 +61,7 @@ class Game:
 
         self.music = pyray.load_music_stream(os.path.join(resources_path, "music.ogg"))
         self.fx_coin = pyray.load_sound(os.path.join(resources_path, "coin.wav"))
+        self.wabbit_texture = pyray.load_texture(os.path.join(resources_path, "wabbit_alpha.png"))
         
         if self.music:
             pyray.set_music_volume(self.music, 1.0)
@@ -69,7 +70,7 @@ class Game:
         # Initialize screens
         self.screens[GameScreen.LOGO] = LogoScreen()
         self.screens[GameScreen.TITLE] = TitleScreen(self.font, self.fx_coin)
-        self.screens[GameScreen.GAMEPLAY] = GameplayScreen(self.font, self.fx_coin)
+        self.screens[GameScreen.GAMEPLAY] = GameplayScreen(self.font, self.fx_coin, self.wabbit_texture)
         self.screens[GameScreen.OPTIONS] = OptionsScreen()
         self.screens[GameScreen.ENDING] = EndingScreen(self.font, self.fx_coin)
         
