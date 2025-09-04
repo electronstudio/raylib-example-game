@@ -1,0 +1,99 @@
+name: Build Cross-Platform Binaries
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux
+            os: ubuntu-latest
+            artifact_name: raylib-example-game-linux
+            binary_path: raylib-example-game
+          - platform: windows
+            os: windows-latest
+            artifact_name: raylib-example-game-windows
+            binary_path: raylib-example-game.exe
+          - platform: macos
+            os: macos-latest
+            artifact_name: raylib-example-game-macos
+            binary_path: raylib-example-game
+
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v4
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install system dependencies (Linux)
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+      - name: Install system dependencies (macOS)
+        if: matrix.platform == 'macos'
+        run: |
+          # macOS usually has the required build tools installed
+          xcode-select --install || true
+
+      - name: Build binary
+        run: |
+          uv sync --dev
+          uv run build-binary
+
+      - name: Verify binary exists
+        run: |
+          ls -la ${{ matrix.binary_path }}
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.binary_path }}
+          if-no-files-found: error
+
+  create-release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Display structure of downloaded files
+        run: ls -R ./artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./artifacts/raylib-example-game-linux/raylib-example-game
+            ./artifacts/raylib-example-game-windows/raylib-example-game.exe
+            ./artifacts/raylib-example-game-macos/raylib-example-game
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
