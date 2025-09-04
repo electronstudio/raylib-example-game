@@ -74,11 +74,31 @@ jobs:
         run: |
           dir ${{ matrix.binary_path }}
 
+      - name: Create Linux archive
+        if: matrix.platform == 'linux'
+        run: |
+          tar -cjf raylib-example-game-linux.tar.bz2 ${{ matrix.binary_path }}
+          ls -la raylib-example-game-linux.tar.bz2
+
+      - name: Create macOS archive
+        if: matrix.platform == 'macos'
+        run: |
+          tar -cjf raylib-example-game-macos.tar.bz2 ${{ matrix.binary_path }}
+          ls -la raylib-example-game-macos.tar.bz2
+
+      - name: Create Windows archive
+        if: matrix.platform == 'windows'
+        run: |
+          7z a raylib-example-game-windows.zip ${{ matrix.binary_path }}
+          dir raylib-example-game-windows.zip
+
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
-          path: ${{ matrix.binary_path }}
+          path: |
+            *.tar.bz2
+            *.zip
           if-no-files-found: error
 
   create-release:
@@ -103,9 +123,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ./artifacts/raylib-example-game-linux/raylib-example-game
-            ./artifacts/raylib-example-game-windows/raylib-example-game.exe
-            ./artifacts/raylib-example-game-macos/raylib-example-game
+            ./artifacts/raylib-example-game-linux/*.tar.bz2
+            ./artifacts/raylib-example-game-windows/*.zip
+            ./artifacts/raylib-example-game-macos/*.tar.bz2
           draft: false
           prerelease: false
           generate_release_notes: true
