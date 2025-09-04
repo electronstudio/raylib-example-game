@@ -30,6 +30,7 @@ Issues = "https://github.com/yourusername/raylib-example-game/issues"
 [project.scripts]
 raylib-example-game = "raylib_example_game:main"
 build-binary = "scripts.build:main"
+build-web = "scripts.build_web:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -38,4 +39,5 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "nuitka>=2.7.13",
+    "pygbag",
 ]
