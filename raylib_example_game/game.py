@@ -2,6 +2,7 @@ import sys
 import platform
 import os
 import pyray
+import asyncio
 from .screens import GameScreen
 from .logo_screen import LogoScreen
 from .title_screen import TitleScreen
@@ -38,7 +39,7 @@ class Game:
         # Screen instances
         self.screens = {}
     
-    def run(self):
+    async def run(self):
         pyray.init_window(self.screen_width, self.screen_height, self.title)
         pyray.init_audio_device()
         
@@ -68,6 +69,7 @@ class Game:
 
         while not pyray.window_should_close():
             self._update_draw_frame()
+            await asyncio.sleep(0)
 
         # De-Initialization
         self._unload_current_screen()
