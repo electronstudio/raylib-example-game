@@ -58,8 +58,8 @@ jobs:
 
       - name: Build binary
         run: |
-          uv sync --dev
-          uv run build-binary
+          uv sync --dev --python python3.13
+          uv run --python python3.13 build-binary
 
       - name: Verify binary exists (Linux/macOS)
         if: matrix.platform != 'windows'
