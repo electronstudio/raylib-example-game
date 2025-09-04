@@ -1,9 +1,12 @@
 """Raylib Example Game - A simple game using Raylib Python bindings."""
 
-__version__ = "0.1.0"
+import asyncio
+from importlib.metadata import version
+__version__ = version("raylib-example-game")
 
 
 def main():
+    print(f"Raylib Example Game v{__version__}")
     from raylib_example_game.game import Game
     game = Game()
-    game.run()
+    asyncio.run(game.run())

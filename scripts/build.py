@@ -22,7 +22,7 @@ def main():
         "--prefer-source-code",
         "--remove-output",
         "--include-package-data=raylib_example_game.resources",
-        "main.py"
+        "--main=raylib_example_game"
     ]
     
     print(f"Running command: {' '.join(cmd)}")
