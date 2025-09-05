@@ -40,12 +40,12 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: /tmp/raylib_example_game_web_build/build/web
+          path: /tmp/game_web_build/build/web
 
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url:  ${{ steps.deployment.outputs.page_url }}
     needs: build
     runs-on: ubuntu-latest
     permissions:

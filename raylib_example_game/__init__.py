@@ -3,6 +3,6 @@
 import asyncio
 
 def main():
-    from raylib_example_game.game import Game
+    from .game import Game
     game = Game()
     asyncio.run(game.run())

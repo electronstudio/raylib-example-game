@@ -23,7 +23,7 @@ def main():
     print(f"Building raylib-example-game for web with pygbag ({mode})...")
     
     project_root = Path.cwd()
-    temp_dir = Path("/tmp/raylib_example_game_web_build")
+    temp_dir = Path("/tmp/game_web_build")
     wheel_url = "https://github.com/electronstudio/pygbag-raylib/releases/download/v5.5.0.3/raylib-5.5.0.3-cp310-abi3-wasm32_bi_emscripten.whl"
     
     try:
