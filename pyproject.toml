@@ -1,6 +1,6 @@
 [project]
 name = "raylib-example-game"
-version = "0.2.0"
+version = "0.3.1"
 description = "A simple game example using Raylib Python bindings"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -23,9 +23,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/raylib-example-game"
-Repository = "https://github.com/yourusername/raylib-example-game.git"
-Issues = "https://github.com/yourusername/raylib-example-game/issues"
+Homepage = "https://github.com/electronstudio/raylib-example-game"
+Repository = "https://github.com/electronstudio/raylib-example-game.git"
+Issues = "https://github.com/electronstudio/raylib-example-game/issues"
 
 [project.scripts]
 raylib-example-game = "raylib_example_game:main"

@@ -44,7 +44,7 @@ Install uv from https://docs.astral.sh/uv/getting-started/installation/
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/raylib-example-game.git
+git clone https://github.com/electronstudio/raylib-example-game.git
 cd raylib-example-game
 
 # Install in development mode
